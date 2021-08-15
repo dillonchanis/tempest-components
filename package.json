@@ -1,0 +1,74 @@
+{
+  "name": "tempest",
+  "private": true,
+  "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ],
+  "type": "module",
+  "scripts": {
+    "build:clear-cache": "rimraf packages/*/lib && rimraf packages/*/tsconfig.tsbuildinfo",
+    "build:ts": "node ./scripts/build-packages.js",
+    "build:clean": "npm run build:ts:clean",
+    "build:ts:clean": "node ./scripts/build-packages-clean.js",
+    "build:watch": "node ./scripts/watch-packages.js",
+    "custom-element-json": "lerna exec -- cem analyze --globs \"**/*.ts\" --exclude \"**/*.d.ts\" --exclude \"**/stories/**\" --exclude \"**/elements/**\" --outdir . --litelement",
+    "cz": "git-cz",
+    "dev": "run-p build:ts storybook",
+    "lint": "npm run lint:ts && npm run lint:lit",
+    "lint:fix": "npm run lint:ts -- --fix && npm run lint:lit -- --fix",
+    "lint:lit": "lit-analyzer \"packages/**/src/*.ts\" --strict",
+    "lint:ts": "eslint \"packages/**/src/*.ts\"",
+    "postcustom-element-json": "lerna exec -- test -f custom-elements.json",
+    "postinstall": "npm run prep",
+    "precustom-element-json": "lerna exec -- rm custom-elements.json ||:",
+    "prep": "npm run build:clear-cache && run-p build:clean",
+    "prepare": "husky install",
+    "storybook": "npm run build:ts && run-p storybook:start build:watch",
+    "storybook:build": "build-storybook",
+    "storybook:start": "wds -c .storybook/server.mjs",
+    "stories:watch": "tsc --build .storybook/tsconfig.json -w"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "13.1.0",
+    "@commitlint/config-conventional": "13.1.0",
+    "@custom-elements-manifest/analyzer": "0.4.17",
+    "@open-wc/demoing-storybook": "2.4.7",
+    "@rollup/plugin-json": "4.1.0",
+    "@typescript-eslint/eslint-plugin": "4.29.1",
+    "@typescript-eslint/parser": "4.29.1",
+    "@web/dev-server": "0.1.21",
+    "@web/dev-server-rollup": "0.3.9",
+    "@web/dev-server-storybook": "0.3.7",
+    "commitizen": "4.2.4",
+    "concurrently": "6.2.1",
+    "custom-elements-manifest": "1.0.0",
+    "eslint": "7.32.0",
+    "eslint-config-prettier": "8.3.0",
+    "eslint-plugin-lit-a11y": "1.0.1",
+    "eslint-plugin-prettier": "3.4.0",
+    "globby": "12.0.0",
+    "lerna": "^4.0.0",
+    "lit-analyzer": "1.2.1",
+    "npm-run-all": "4.1.5",
+    "prettier": "2.3.2",
+    "rimraf": "3.0.2",
+    "web-component-analyzer": "1.1.6"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-lerna-changelog"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "lint-staged": {
+    "packages/**/src/*.ts": [
+      "eslint --fix"
+    ]
+  }
+}
