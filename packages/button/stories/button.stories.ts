@@ -1,3 +1,4 @@
+import { html } from "lit-element";
 import "../tempest-button.js";
 
 export default {
@@ -22,4 +23,9 @@ export default {
   },
 };
 
-export const BaseButton = () => `<tempest-button>Click Me</tempest-button>`;
+interface ButtonProps {
+  disabled?: boolean;
+}
+
+export const BaseButton = ({ disabled }: ButtonProps) =>
+  html`<tempest-button ?disabled=${disabled}>Click Me!</tempest-button>`;
